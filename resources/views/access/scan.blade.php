@@ -185,7 +185,7 @@
             isProcessing = true;
 
             try {
-                const response = await fetch("{{ route('access.validate') }}", {
+                const response = await fetch("{{ route('access.validate', [], false) }}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -197,20 +197,56 @@
                     })
                 });
 
-            const data = await response.json();
-            showResult(data);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error del servidor:', response.status, errorText);
 
-            setTimeout(() => {
-                isProcessing = false;
-                lastScannedCode = null;
-                window.location.reload();
-            }, 2500);
+                    let message = 'El servidor respondió con un error: ' + response.status;
+
+                    if (response.status === 419) {
+                        message = 'La sesión expiró o el token de seguridad no coincide. Cierre sesión, vuelva a iniciar e intente nuevamente.';
+                    }
+
+                    if (response.status === 403) {
+                        message = 'No tiene permiso para realizar esta validación.';
+                    }
+
+                    if (response.status === 404) {
+                        message = 'No se encontró la ruta de validación.';
+                    }
+
+                    if (response.status === 500) {
+                        message = 'Ocurrió un error interno en el servidor. Revise los logs de Railway.';
+                    }
+
+                    showResult({
+                        status: 'denied',
+                        title: 'Error de validación',
+                        message: message,
+                        client: null
+                    });
+
+                    isProcessing = false;
+                    lastScannedCode = null;
+                    return;
+                }
+
+                const data = await response.json();
+                showResult(data);
+
+                setTimeout(() => {
+                    isProcessing = false;
+                    lastScannedCode = null;
+                    window.location.reload();
+                }, 2500);
 
             } catch (error) {
+                console.error('Error de conexión o JavaScript:', error);
+
                 showResult({
                     status: 'denied',
                     title: 'Error de validación',
-                    message: 'No se pudo validar el código QR.',
+                    message: 'No se pudo conectar con el servidor de validación.',
                     client: null
                 });
 
