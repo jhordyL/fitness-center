@@ -58,13 +58,25 @@
                     <tbody>
                         @forelse ($clients as $client)
                             <tr>
-                                <td style="padding: 14px; border: 1px solid #e5e7eb;">{{ $client->id }}</td>
-                                <td style="padding: 14px; border: 1px solid #e5e7eb;">{{ $client->dni }}</td>
+                                <td style="padding: 14px; border: 1px solid #e5e7eb;">
+                                    {{ $client->id }}
+                                </td>
+
+                                <td style="padding: 14px; border: 1px solid #e5e7eb;">
+                                    {{ $client->dni }}
+                                </td>
+
                                 <td style="padding: 14px; border: 1px solid #e5e7eb;">
                                     {{ $client->first_name }} {{ $client->last_name }}
                                 </td>
-                                <td style="padding: 14px; border: 1px solid #e5e7eb;">{{ $client->phone ?? '-' }}</td>
-                                <td style="padding: 14px; border: 1px solid #e5e7eb;">{{ $client->email ?? '-' }}</td>
+
+                                <td style="padding: 14px; border: 1px solid #e5e7eb;">
+                                    {{ $client->phone ?? '-' }}
+                                </td>
+
+                                <td style="padding: 14px; border: 1px solid #e5e7eb;">
+                                    {{ $client->email ?? '-' }}
+                                </td>
 
                                 <td style="padding: 14px; border: 1px solid #e5e7eb;">
                                     @if ($client->status === 'active')
@@ -79,7 +91,12 @@
                                 </td>
 
                                 <td style="padding: 14px; border: 1px solid #e5e7eb;">
-                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <a href="{{ route('clients.qr.show', $client) }}"
+                                           style="background-color: #2563eb; color: white; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                                            QR
+                                        </a>
+
                                         <a href="{{ route('clients.edit', $client) }}"
                                            style="background-color: #f59e0b; color: white; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
                                             Editar
