@@ -197,13 +197,14 @@
                     })
                 });
 
-                const data = await response.json();
-                showResult(data);
+            const data = await response.json();
+            showResult(data);
 
-                setTimeout(() => {
-                    isProcessing = false;
-                    lastScannedCode = null;
-                }, 2500);
+            setTimeout(() => {
+                isProcessing = false;
+                lastScannedCode = null;
+                window.location.reload();
+            }, 2500);
 
             } catch (error) {
                 showResult({

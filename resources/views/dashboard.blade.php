@@ -23,7 +23,31 @@
                 </p>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            @if (auth()->user()->role === 'admin')
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-bottom: 24px;">
+                    <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                        <p style="color: #6b7280; margin-bottom: 8px;">Clientes registrados</p>
+                        <h3 style="font-size: 30px; font-weight: 800;">{{ $totalClients }}</h3>
+                    </div>
+
+                    <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                        <p style="color: #6b7280; margin-bottom: 8px;">Clientes activos</p>
+                        <h3 style="font-size: 30px; font-weight: 800;">{{ $activeClients }}</h3>
+                    </div>
+
+                    <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                        <p style="color: #6b7280; margin-bottom: 8px;">Membresías vigentes</p>
+                        <h3 style="font-size: 30px; font-weight: 800;">{{ $activeMemberships }}</h3>
+                    </div>
+
+                    <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                        <p style="color: #6b7280; margin-bottom: 8px;">Planes activos</p>
+                        <h3 style="font-size: 30px; font-weight: 800;">{{ $activePlans }}</h3>
+                    </div>
+                </div>
+            @endif
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px;">
 
                 @if (auth()->user()->role === 'admin')
                     <a href="{{ route('plans.index') }}"
@@ -66,7 +90,86 @@
                         Escanear o ingresar manualmente el código QR del cliente.
                     </p>
                 </a>
+            </div>
 
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px;">
+                <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                    <p style="color: #6b7280; margin-bottom: 8px;">Validaciones de hoy</p>
+                    <h3 style="font-size: 30px; font-weight: 800;">{{ $todayAccesses }}</h3>
+                </div>
+
+                <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                    <p style="color: #6b7280; margin-bottom: 8px;">Accesos permitidos hoy</p>
+                    <h3 style="font-size: 30px; font-weight: 800; color: #166534;">{{ $allowedToday }}</h3>
+                </div>
+
+                <div style="background: white; padding: 22px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                    <p style="color: #6b7280; margin-bottom: 8px;">Accesos denegados hoy</p>
+                    <h3 style="font-size: 30px; font-weight: 800; color: #991b1b;">{{ $deniedToday }}</h3>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 10px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto;">
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 16px;">
+                    Últimas validaciones de acceso
+                </h3>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f3f4f6;">
+                            <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Fecha</th>
+                            <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Cliente</th>
+                            <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Resultado</th>
+                            <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Motivo</th>
+                            <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Usuario</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($latestAccessLogs as $log)
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #e5e7eb;">
+                                    {{ $log->created_at->format('d/m/Y H:i') }}
+                                </td>
+
+                                <td style="padding: 12px; border: 1px solid #e5e7eb;">
+                                    @if ($log->client)
+                                        {{ $log->client->first_name }} {{ $log->client->last_name }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
+                                <td style="padding: 12px; border: 1px solid #e5e7eb;">
+                                    @if ($log->result === 'allowed')
+                                        <span style="background-color: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 600;">
+                                            Permitido
+                                        </span>
+                                    @else
+                                        <span style="background-color: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 999px; font-weight: 600;">
+                                            Denegado
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <td style="padding: 12px; border: 1px solid #e5e7eb;">
+                                    {{ $log->reason }}
+                                </td>
+
+                                <td style="padding: 12px; border: 1px solid #e5e7eb;">
+                                    {{ $log->user->name ?? '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5"
+                                    style="padding: 16px; border: 1px solid #e5e7eb; text-align: center; color: #6b7280;">
+                                    No hay validaciones registradas.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
         </div>

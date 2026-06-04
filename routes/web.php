@@ -1,20 +1,22 @@
 <?php
 
-    use App\Http\Controllers\ProfileController;
-    use App\Http\Controllers\PlanController;
-    use App\Http\Controllers\ClientController;
-    use App\Http\Controllers\MembershipController;
-    use App\Http\Controllers\QrCodeController;
-    use App\Http\Controllers\AccessController;
-    use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\MembershipController;
+use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\AccessController;
+use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
